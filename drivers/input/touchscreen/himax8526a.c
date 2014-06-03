@@ -39,7 +39,14 @@
 #ifdef CONFIG_INPUT_CAPELLA_CM3628_POCKETMOD
 #include <linux/pl_sensor.h>
 #define HIMAX_PKT_MOD
-static int device_is_pocketed();
+static int device_is_pocketed() {
+	if (!(is_screen_on))
+		if (pocket_mod_switch)
+			return pocket_detection_check();
+
+	printk(KERN_INFO "[TS][S2W]%s: screen is on", __func__);
+	return 0;
+}
 #endif
 
 #ifdef ABS_MT_SLOT
@@ -679,14 +686,6 @@ static ssize_t himax_pkt_mod_set(struct device *dev,
 static DEVICE_ATTR(pkt_mod_switch, (S_IWUSR|S_IRUGO),
 	himax_pkt_mod_show, himax_pkt_mod_set);
 
-static int device_is_pocketed() {
-	if (!(is_screen_on))
-		if (pocket_mod_switch)
-			return pocket_detection_check();
-
-	printk(KERN_INFO "[TS][S2W]%s: screen is on", __func__);
-	return 0;
-}
 #endif
 
 static struct kobject *android_touch_kobj;
